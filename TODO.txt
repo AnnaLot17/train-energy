@@ -1,0 +1,10 @@
+
+train-kabina-graphics_1put-bes EP	| [x]		
+train-kabina-graphics_1put-EP		| [x]		
+train-kabina-graphics-2-PUT-bes EP	| []		
+train-kabina-graphics-2-PUT-EP		| []		
+train-kabina-table-2put-bes EP		| []		
+train-kabina-table-2put-EP		| []		
+
+vtrain-kabina-table-3put-bes EP	 []
+train-kabina-table-3put-EP	 []
