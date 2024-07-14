@@ -14,6 +14,11 @@ cmap = 'YlOrRd'
 # РЕЖИМ РАБОТЫ СЕТИ
 
 I = 300  # cуммарная сила тока, А
+part_kp = 0.35
+part_nt = 0.15
+part_up = 0.50
+part_ep = -0.4  # минус так как ток запущен в обратном направлении
+
 U = 27000  # cуммарное напряжение, В
 
 # СТАТИСТИЧЕСКИЕ ДАННЫЕ
@@ -121,10 +126,10 @@ def magnetic_calc(x_m, z_m, f_m):
     I_h = I * harm.get(f_m)[0]
 
     # сила тока по проводам
-    Ikp = 0.35 * I_h
-    Int = 0.60 * I_h
-    Iup = 0.15 * I_h
-    Iep = -0.40 * I_h
+    Ikp = part_kp * I_h
+    Int = part_nt * I_h
+    Iup = part_up * I_h
+    Iep = part_ep * I_h
 
     # расчёт x и z составляющих магнитного поля от правого рельса для КП
     x = x_m - xp_kp
@@ -166,7 +171,7 @@ def magnetic_calc(x_m, z_m, f_m):
             (x2 + 2 * xp + x) / ((x2 + 2 * xp + x) ** 2 + z_m ** 2) - (x + 2 * xp) / (
             (x + 2 * xp) ** 2 + (h_up - z_m) ** 2))
             
-    # ЕП
+    # ЭП
     x = x_m - xp_ep
     x2 = -xp + xp_ep
     h1xep = Iep / (4 * pi) * (
@@ -445,7 +450,7 @@ def visual_up():
         plt.colorbar()
 
         # рисование и подпись проводов
-        for delta_y in [xp_kp, xp_up, xp_nt]:
+         for delta_y in [xp_kp, xp_up, xp_nt, xp_ep]:
             plt.hlines(delta_y, Xmin, Xmax, color='black', linewidth=2)
         plt.text(-.5, xp_kp - 0.1, 'КП', color='black')
         plt.text(-.5, xp_up - 0.1, 'УП', color='black')
@@ -666,7 +671,7 @@ def glass_reflect(x, y, z):
            (sbor[3]+sbor[2]) - h_up,
            (sbor[3]+sbor[2]) - h_ep]
     x_p = [xp_kp, xp_nt, xp_up, xp_ep]
-    I_p = [0.41, 0.2, 0.39, -0.4]
+    I_p = [part_kp, part_nt, part_up, part_ep]
     d_p = [d_kp, d_nt, d_up, d_ep]
 
 
@@ -780,7 +785,7 @@ def visual_up_reflect(ext_f):
     plt.colorbar()
 
     # названия проводов
-    for delta_y in [xp_kp, xp_up, xp_nt]:
+    for delta_y in [xp_kp, xp_up, xp_nt, xp_ep]:
         plt.hlines(delta_y, Xmin, Xmax, color='black', linewidth=2)
     plt.text(-.5, xp_kp - 0.1, 'КП', color='black')
     plt.text(-.5, xp_up - 0.1, 'УП', color='black')
