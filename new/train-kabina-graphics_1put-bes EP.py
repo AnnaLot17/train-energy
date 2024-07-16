@@ -11,6 +11,13 @@ from shapely.geometry import Polygon, LineString, Point
 #plt.style.use('seaborn-white')
 cmap = 'YlOrRd'
 
+'''
+Ось х - ось вдоль рельс
+Ось y - ось поперёк рельс
+Ось z - ось вверх к проводам
+
+'''
+
 # РЕЖИМ РАБОТЫ СЕТИ
 
 I = 300  # cуммарная сила тока, А

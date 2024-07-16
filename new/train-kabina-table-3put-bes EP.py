@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from shapely.geometry import Polygon, LineString, Point
 
+# РЕЖИМ РАБОТЫ СЕТИ
+
 '''
 Ось х - ось вдоль рельс
 Ось y - ось поперёк рельс
@@ -11,17 +13,23 @@ from shapely.geometry import Polygon, LineString, Point
 
 '''
 
-# РЕЖИМ РАБОТЫ СЕТИ
+# первый путь
+I1 = 300  # cуммарная сила тока, А
+U1 = 30000  # cуммарное напряжение, В
 
-I = 300  # cуммарная сила тока, А
+# второй путь
+I2 = 300  # cуммарная сила тока, А
+U2 = 30000  # cуммарное напряжение, В
+
+# третий путь
+I3 = 300  # cуммарная сила тока, А
+U3 = 30000  # cуммарное напряжение, В
+
+# распределение тока по проводам
 part_kp = 0.35
 part_nt = 0.15
 part_up = 0.50
 
-U = 27000  # cуммарное напряжение, В
-
-I_ted = 880  # сила тока в ТЭД, А
-U_ted = 1950  # напряжение в ТЭД, В
 
 # СТАТИСТИЧЕСКИЕ ДАННЫЕ
 x_chel = 0.9  # положение человека по оси х
@@ -37,7 +45,7 @@ z_graph = z_chel  # высота среза
 
 # КОНСТАНТЫ
 
-dis = 150  # дискретизация расчётов (больше - плавнее, но дольше счёт)
+dis = 200  # дискретизация расчётов (больше - плавнее, но дольше счёт)
 harm = {50: [1, 1],
         150: [0.3061, 0.400],
         250: [0.1469, 0.115],
@@ -50,21 +58,38 @@ harm = {50: [1, 1],
 # ДАННЫЕ О КОНТАКТНОЙ СЕТИ
 
 xp = 0.760  # m - половина расстояния между рельсами
-xp_kp = 0.3  # m - расстояние от центра между рельсами до КП (если левее центра - поставить минус)
-xp_nt = 0  # m - расстояние от центра между рельсами до НТ (если левее центра - поставить минус)
-xp_up = -3.7  # m - расстояние от центра между рельсами до УП
+
 d_kp = 12.81 / 1000  # mm
 d_nt = 12.5 / 1000  # mm
 d_up = 17.5 / 1000  # mm
+d_ep = 12.5 / 1000  # mm
 h_kp = 6.0  # КП
 h_nt = 7.8  # НТ
 h_up = 8.8  # УП
+h_ep = 8.4  # ЕП
 
+# первый путь
+xp_kp = 0  # m - расстояние от центра между рельсами до КП (если левее центра - поставить минус)
+xp_nt = 0  # m - расстояние от центра между рельсами до НТ (если левее центра - поставить минус)
+xp_up = -3.7  # m - расстояние от центра между рельсами до УП (если правее центра - убрать минус)
+xp_ep = -2.7   # m - расстояние от центра между рельсами до ЭП (если правее центра - убрать минус)
 
-xp_mid = 4.2  # расстояние между центрами путей
+# второй путь
+xp_mid12 = 4.2  # расстояние между центрами перового и второго путей
 xp_kp2 = 0  # m - расстояние от центра между рельсами до КП2 (если левее центра - поставить минус)
 xp_nt2 = 0  # m - расстояние от центра между рельсами до НТ2 (если левее центра - поставить минус)
-xp_up2 = 3.7  # m - расстояние от центра между рельсами до УП2
+xp_up2 = 3.7  # m - расстояние от центра между рельсами до УП2 (если левее центра - поставить минус)
+xp_ep2 = 2.7  # m - расстояние от центра между вторыми рельсами до ЭП2 (если левее центра - поставить минус)
+
+# третий путь
+# todo провода справа или слева?
+xp_mid23 = 4.2  # расстояние между центрами второго и третьего путей
+xp_mid13 = xp_mid12 + xp_mid23
+xp_kp3 = 0  # m - расстояние от центра между рельсами до КП3 (если левее центра - поставить минус)
+xp_nt3 = 0  # m - расстояние от центра между рельсами до НТ3 (если левее центра - поставить минус)
+xp_up3 = 3.7  # m - расстояние от центра между рельсами до УП2
+xp_ep3 = 2.7  # m - расстояние от центра между вторыми рельсами до ЭП2
+
 
 # ДАННЫЕ О ЛОКОМОТИВЕ
 
@@ -115,6 +140,23 @@ max_up2_l = Point(-0.5 * width, sbor[2]).distance(Point(xp_up2 + xp_mid, h_up))
 min_up2_r = Point(0.5 * width, sbor[3]).distance(Point(xp_up2 + xp_mid, h_up))
 max_up2_r = Point(0.5 * width, sbor[2]).distance(Point(xp_up2 + xp_mid, h_up))
 
+
+min_nt3_l = Point(-0.5 * width, sbor[3]).distance(Point(xp_nt3 + xp_mid13, h_nt))
+max_nt3_l = Point(-0.5 * width, sbor[2]).distance(Point(xp_nt3 + xp_mid13, h_nt))
+min_nt3_r = Point(0.5 * width, sbor[3]).distance(Point(xp_nt3 + xp_mid13, h_nt))
+max_nt3_r = Point(0.5 * width, sbor[2]).distance(Point(xp_nt3 + xp_mid13, h_nt))
+
+min_kp3_l = Point(-0.5 * width, sbor[3]).distance(Point(xp_kp3 + xp_mid13, h_kp))
+max_kp3_l = Point(-0.5 * width, sbor[2]).distance(Point(xp_kp3 + xp_mid13, h_kp))
+min_kp3_r = Point(0.5 * width, sbor[3]).distance(Point(xp_kp3 + xp_mid13, h_kp))
+max_kp3_r = Point(0.5 * width, sbor[2]).distance(Point(xp_kp3 + xp_mid13, h_kp))
+
+min_up3_l = Point(-0.5 * width, sbor[3]).distance(Point(xp_up3 + xp_mid13, h_up))
+max_up3_l = Point(-0.5 * width, sbor[2]).distance(Point(xp_up3 + xp_mid13, h_up))
+min_up3_r = Point(0.5 * width, sbor[3]).distance(Point(xp_up3 + xp_mid13, h_up))
+max_up3_r = Point(0.5 * width, sbor[2]).distance(Point(xp_up3 + xp_mid13, h_up))
+
+
 # ЭКРАН
 # стекло - высчитываем d для подсчёта энергии преломлённой волны
 e1 = 1
@@ -138,12 +180,13 @@ def mix(h_x, h_zz):
 # магнитное поле гармоники f для заданной координаты x и z
 def magnetic_calc(x_m, z_m, f_m):
     # общая сила тока гармоники
-    I_h = I * harm.get(f_m)[0]
+    I_h = I1 * harm.get(f_m)[0]
 
     # сила тока по проводам
     Ikp = part_kp * I_h
     Int = part_nt * I_h
     Iup = part_up * I_h
+    Iep = part_ep * I_h
 
     # расчёт x и z составляющих магнитного поля от правого рельса для КП
     x = x_m - xp_kp
@@ -185,7 +228,16 @@ def magnetic_calc(x_m, z_m, f_m):
     h2zup = Iup / (4 * pi) * (
             (x2 + 2 * xp + x) / ((x2 + 2 * xp + x) ** 2 + z_m ** 2) - (x + 2 * xp) / (
                 (x + 2 * xp) ** 2 + (h_up - z_m) ** 2))
-                
+ 
+    # второй путь
+    
+    I_h = I2 * harm.get(f_m)[0] 
+
+    Ikp = part_kp * I_h
+    Int = part_nt * I_h
+    Iup = part_up * I_h
+    Iep = part_ep * I_h 
+
     # КП2
     x = x_m - (xp_kp2 + xp_mid)
     h1xkp_2 = Ikp / (4 * pi) * (
@@ -228,12 +280,63 @@ def magnetic_calc(x_m, z_m, f_m):
             (x2 + 2 * xp + x) / ((x2 + 2 * xp + x) ** 2 + z_m ** 2) - (x + 2 * xp) / (
             (x + 2 * xp) ** 2 + (h_up - z_m) ** 2))
 
+    # третий путь
+    
+    I_h = I3 * harm.get(f_m)[0]
+
+    Ikp = part_kp * I_h
+    Int = part_nt * I_h
+    Iup = part_up * I_h
+    Iep = part_ep * I_h
+    
+    # КП3
+    x = x_m - (xp_kp2 + xp_mid13)
+    h1xkp_3 = Ikp / (4 * pi) * (
+                -z_m / ((x + xp) ** 2 + z_m**2) + (z_m - h_kp)/(x ** 2 + (h_kp - z_m)**2))
+    h1zkp_3 = Ikp / (4 * pi) * (x + xp) * (
+                1 / ((x + xp) ** 2 + z_m ** 2) - 1/(x ** 2 + (h_kp - z_m) ** 2))
+    x = x_m - 2*xp - (xp_kp2 + xp_mid13)
+    h2xkp_3 = Ikp / (4 * pi) * (
+                -z_m / ((x + xp) ** 2 + z_m ** 2) + (z_m - h_kp) / ((x + 2*xp) ** 2 + (h_kp - z_m) ** 2))
+    h2zkp_3 = Ikp / (4 * pi) * (x + xp) * (
+                1 / ((x + xp) ** 2 + z_m ** 2) - 1 / ((x + 2*xp) ** 2 + (h_kp - z_m) ** 2))
+
+    # НТ3
+    x = x_m - (xp_nt2 + xp_mid13)
+    h1xnt_3 = Int / (4 * pi) * (
+            -z_m / ((x + xp) ** 2 + z_m ** 2) + (z_m - h_nt) / (x ** 2 + (h_nt - z_m) ** 2))
+    h1znt_3 = Int / (4 * pi) * (x + xp) * (
+            1 / ((x + xp) ** 2 + z_m ** 2) - 1 / (x ** 2 + (h_nt - z_m) ** 2))
+    x = x_m - 2 * xp - (xp_nt2 + xp_mid13)
+    h2xnt_3 = Int / (4 * pi) * (
+            -z_m / ((x + xp) ** 2 + z_m ** 2) + (z_m - h_nt) / ((x + 2 * xp) ** 2 + (h_nt - z_m) ** 2))
+    h2znt_3 = Int / (4 * pi) * (x + xp) * (
+            1 / ((x + xp) ** 2 + z_m ** 2) - 1 / ((x + 2 * xp) ** 2 + (h_nt - z_m) ** 2))
+
+    # УП3
+    x = x_m - (xp_up2 + xp_mid13)
+    x2 = -xp + xp_up2
+    h1xup_3 = Iup / (4 * pi) * (
+            -z_m / ((x2 + 2 * xp + x) ** 2 + z_m ** 2) + (z_m - h_up) / (x ** 2 + (h_up - z_m) ** 2))
+    h1zup_3 = Iup / (4 * pi) * (x2 + 2 * xp + x) * (
+            1 / ((x2 + 2 * xp + x) ** 2 + z_m ** 2) - 1 / (x ** 2 + (h_up - z_m) ** 2))
+    x = x_m - (xp_up2 + xp_mid13) - 2 * xp
+    x2 = -xp + xp_up2
+    h2xup_3 = Iup / (4 * pi) * (
+            -z_m / ((x2 + 2 * xp + x) ** 2 + z_m ** 2) + (z_m - h_up) / ((x + 2 * xp) ** 2 + (h_up - z_m) ** 2))
+    h2zup_3 = Iup / (4 * pi) * (
+            (x2 + 2 * xp + x) / ((x2 + 2 * xp + x) ** 2 + z_m ** 2) - (x + 2 * xp) / (
+                (x + 2 * xp) ** 2 + (h_up - z_m) ** 2))
+
+
     # Сумма всех магнитных полей по оси x        
-    hx = sum([h1xkp, h2xkp, h1xnt, h2xnt, h1xup, h2xup,
-              h1xkp_2, h2xkp_2, h1xnt_2, h2xnt_2, h1xup_2, h2xup_2])
+    hx = sum([h1xkp, h2xkp, h1xnt, h2xnt, h1xup, h2xup, 
+              h1xkp_2, h2xkp_2, h1xnt_2, h2xnt_2, h1xup_2, h2xup_2,
+              h1xkp_3, h2xkp_3, h1xnt_3, h2xnt_3, h1xup_3, h2xup_3])
     # Сумма всех магнитных полей по оси z
     hz = sum([h1zkp, h2zkp, h1znt, h2znt, h1zup, h2zup,
-              h1zkp_2, h2zkp_2, h1znt_2, h2znt_2, h1zup_2, h2zup_2,])
+              h1zkp_2, h2zkp_2, h1znt_2, h2znt_2, h1zup_2, h2zup_2,
+              h1zkp_3, h2zkp_3, h1znt_3, h2znt_3, h1zup_3, h2zup_3])
     # Итоговое магнитное поле по теореме Пифагора:
     h = mix(hx, hz)
     
@@ -243,20 +346,32 @@ def magnetic_calc(x_m, z_m, f_m):
 
 # расчёт электрического поля для гармоники f в точке x, z
 def electric_calc(x_e, z_e, f_e):
-    U_h = U * harm.get(f_e)[1]
+    U_h = U1 * harm.get(f_e)[1]
 
     ekp = U_h * log(1 + 4 * h_nt * z_e / ((x_e - xp_nt) ** 2 + (h_nt - z_e) ** 2)) / (2 * z_e * log(4 * h_nt / d_nt))
     ent = U_h * log(1 + 4 * h_kp * z_e / ((x_e - xp_kp) ** 2 + (h_kp - z_e) ** 2)) / (2 * z_e * log(4 * h_kp / d_kp))
     eup = U_h * log(1 + 4 * h_up * z_e / ((x_e - xp_up) ** 2 + (h_up - z_e) ** 2)) / (2 * z_e * log(4 * h_up / d_up))
 
+    U_h = U2 * harm.get(f_e)[1]
     ekp_scd = U_h * log(1 + 4 * h_nt * z_e / ((x_e - xp_nt2 - xp_mid) ** 2 + (h_nt - z_e) ** 2)) / (
                 2 * z_e * log(4 * h_nt / d_nt))
     ent_scd = U_h * log(1 + 4 * h_kp * z_e / ((x_e - xp_kp2 - xp_mid) ** 2 + (h_kp - z_e) ** 2)) / (
                 2 * z_e * log(4 * h_kp / d_kp))
     eup_scd = U_h * log(1 + 4 * h_up * z_e / ((x_e - xp_up2 - xp_mid) ** 2 + (h_up - z_e) ** 2)) / (
                 2 * z_e * log(4 * h_up / d_up))
-  
-    return sum([ekp, ent, eup, ekp_scd, ent_scd, eup_scd])
+
+
+    U_h = U3 * harm.get(f_e)[1]
+
+    ekp_thd = U_h * log(1 + 4 * h_nt * z_e / ((x_e - xp_nt2 - xp_mid13) ** 2 + (h_nt - z_e) ** 2)) / (
+                2 * z_e * log(2 * h_nt / d_nt))
+    ent_thd = U_h * log(1 + 4 * h_kp * z_e / ((x_e - xp_kp2 - xp_mid13) ** 2 + (h_kp - z_e) ** 2)) / (
+                2 * z_e * log(2 * h_kp / d_kp))
+    eup_thd = U_h * log(1 + 4 * h_up * z_e / ((x_e - xp_up2 - xp_mid13) ** 2 + (h_up - z_e) ** 2)) / (
+                2 * z_e * log(2 * h_up / d_up))
+
+
+    return sum([ekp, ent, eup, ekp_scd, ent_scd, eup_scd, ekp_thd, ent_thd, eup_thd])
 
 
 
@@ -279,11 +394,13 @@ def ekran(en):
     kppth = LineString([(x, y, z), (x, xp_kp, h_kp)])
     ntpth = LineString([(x, y, z), (x, xp_nt, h_nt)])
     uppth = LineString([(x, y, z), (x, xp_up, h_up)])
+    eppth = LineString([(x, y, z), (x, xp_ep, h_ep)])
     # проверяем, попадает ли лобовое окно по направлению от текущей точки до проводов
     kp_pass = kppth.intersects(frontWindleft) or kppth.intersects(frontWindright)
     nt_pass = ntpth.intersects(frontWindleft) or ntpth.intersects(frontWindright)
     up_pass = ntpth.intersects(frontWindleft) or uppth.intersects(frontWindright)
- 
+    ep_pass = eppth.intersects(frontWindleft) or eppth.intersects(frontWindright)
+
 
     # для каждого провода проверяем, попадает ли текущая точка в тень от бокового окна или нет
     kp_dist = Point(y, z).distance(Point(xp_kp, h_kp))  # направление от точки до провода
@@ -300,7 +417,7 @@ def ekran(en):
                and (z >= sbor[2]) and (z <= sbor[3])
     up_pass |= (up_dist >= min_up_r) and (up_dist <= max_up_r) and (x >= sbor[0]) and (x <= sbor[1]) \
                and (z >= sbor[2]) and (z <= sbor[3])
-               
+
     kp_sec_dist = Point(y, z).distance(Point(xp_kp2 + xp_mid, h_kp))
     kp_sec_pass = (kp_sec_dist >= min_kp2_l) and (kp_sec_dist <= max_kp2_l) and (x >= sbor[0]) and (x <= sbor[1]) \
                   and (z >= sbor[2]) and (z <= sbor[3])
@@ -318,13 +435,34 @@ def ekran(en):
                   and (z >= sbor[2]) and (z <= sbor[3])
     up_sec_pass |= (up_sec_dist >= min_up2_r) and (up_sec_dist <= max_up2_r) and (x >= sbor[0]) and (x <= sbor[1]) \
                    and (z >= sbor[2]) and (z <= sbor[3])
+                   
+    kp_thd_dist = Point(y, z).distance(Point(xp_kp3 + xp_mid13, h_kp))
+    kp_thd_pass = (kp_thd_dist >= min_kp3_l) and (kp_thd_dist <= max_kp3_l) and (x >= sbor[0]) and (x <= sbor[1]) \
+                  and (z >= sbor[2]) and (z <= sbor[3])
+    kp_thd_pass |= (kp_thd_dist >= min_kp3_r) and (kp_thd_dist <= max_kp3_r) and (x >= sbor[0]) and (x <= sbor[1]) \
+                   and (z >= sbor[2]) and (z <= sbor[3])
+
+    nt_thd_dist = Point(y, z).distance(Point(xp_nt3 + xp_mid13, h_nt))
+    nt_thd_pass = (nt_thd_dist >= min_nt3_l) and (nt_thd_dist <= max_nt3_l) and (x >= sbor[0]) and (x <= sbor[1]) \
+                  and (z >= sbor[2]) and (z <= sbor[3])
+    nt_thd_pass |= (nt_thd_dist >= min_nt3_r) and (nt_thd_dist <= max_nt3_r) and (x >= sbor[0]) and (x <= sbor[1]) \
+                   and (z >= sbor[2]) and (z <= sbor[3])
+
+    up_thd_dist = Point(y, z).distance(Point(xp_up3 + xp_mid13, h_up))
+    up_thd_pass = (up_thd_dist >= min_up3_l) and (up_thd_dist <= max_up3_l) and (x >= sbor[0]) and (x <= sbor[1]) \
+                  and (z >= sbor[2]) and (z <= sbor[3])
+    up_thd_pass |= (up_thd_dist >= min_up3_r) and (up_thd_dist <= max_up3_r) and (x >= sbor[0]) and (x <= sbor[1]) \
+                   and (z >= sbor[2]) and (z <= sbor[3])
+
     # для каждой точки внутри кабины проверяем, проходит ли для неё какое-либо поле через стекло
     # сталь: электрическое поле полностью отражается, магнитное полностью затухает
     # стекло: и электрическое, и магнитное домножаются на d_glass по формуле:
     # Эпрел = Эпад*d = (ExH)*d = E*d x H*d
     if (abs(y) <= 0.5 * width) and (z >= gr_floor) and (z <= floor + height) and (x > 0) and (x < length):
         # внутри кабины
-        if kp_pass or nt_pass or up_pass or kp_sec_pass or nt_sec_pass or up_sec_pass:
+        if kp_pass or nt_pass or up_pass or \
+           kp_sec_pass or nt_sec_pass or up_sec_pass or \
+           kp_thd_pass or nt_thd_pass or up_thd_pass:
             # поле КП через стекло
             for f in en[0].keys():
                 en[0][f][0] *= d_glass

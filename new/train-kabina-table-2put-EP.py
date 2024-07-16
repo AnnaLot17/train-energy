@@ -4,6 +4,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 from shapely.geometry import Polygon, LineString, Point
 
+'''
+Ось х - ось вдоль рельс
+Ось y - ось поперёк рельс
+Ось z - ось вверх к проводам
+
+'''
+
 # РЕЖИМ РАБОТЫ СЕТИ
 
 I = 300  # cуммарная сила тока, А
@@ -31,7 +38,7 @@ z_graph = z_chel  # высота среза
 
 # КОНСТАНТЫ
 
-dis = 100  # дискретизация расчётов (больше - плавнее, но дольше счёт)
+dis = 150  # дискретизация расчётов (больше - плавнее, но дольше счёт)
 harm = {50: [1, 1],
         150: [0.3061, 0.400],
         250: [0.1469, 0.115],
@@ -154,6 +161,7 @@ def magnetic_calc(x_m, z_m, f_m):
     Ikp = part_kp * I_h
     Int = part_nt * I_h
     Iup = part_up * I_h
+    Iep = part_ep * I_h
 
     # расчёт x и z составляющих магнитного поля от правого рельса для КП
     x = x_m - xp_kp
