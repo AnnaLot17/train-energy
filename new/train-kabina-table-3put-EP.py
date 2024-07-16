@@ -131,25 +131,25 @@ max_ep_l = Point(-0.5*width, sbor[2]).distance(Point(xp_ep, h_ep))
 min_ep_r = Point(0.5*width, sbor[3]).distance(Point(xp_ep, h_ep))
 max_ep_r = Point(0.5*width, sbor[2]).distance(Point(xp_ep, h_ep))
 
-min_nt2_l = Point(-0.5 * width, sbor[3]).distance(Point(xp_nt2 + xp_mid, h_nt))
-max_nt2_l = Point(-0.5 * width, sbor[2]).distance(Point(xp_nt2 + xp_mid, h_nt))
-min_nt2_r = Point(0.5 * width, sbor[3]).distance(Point(xp_nt2 + xp_mid, h_nt))
-max_nt2_r = Point(0.5 * width, sbor[2]).distance(Point(xp_nt2 + xp_mid, h_nt))
+min_nt2_l = Point(-0.5 * width, sbor[3]).distance(Point(xp_nt2 + xp_mid12, h_nt))
+max_nt2_l = Point(-0.5 * width, sbor[2]).distance(Point(xp_nt2 + xp_mid12, h_nt))
+min_nt2_r = Point(0.5 * width, sbor[3]).distance(Point(xp_nt2 + xp_mid12, h_nt))
+max_nt2_r = Point(0.5 * width, sbor[2]).distance(Point(xp_nt2 + xp_mid12, h_nt))
 
-min_kp2_l = Point(-0.5 * width, sbor[3]).distance(Point(xp_kp2 + xp_mid, h_kp))
-max_kp2_l = Point(-0.5 * width, sbor[2]).distance(Point(xp_kp2 + xp_mid, h_kp))
-min_kp2_r = Point(0.5 * width, sbor[3]).distance(Point(xp_kp2 + xp_mid, h_kp))
-max_kp2_r = Point(0.5 * width, sbor[2]).distance(Point(xp_kp2 + xp_mid, h_kp))
+min_kp2_l = Point(-0.5 * width, sbor[3]).distance(Point(xp_kp2 + xp_mid12, h_kp))
+max_kp2_l = Point(-0.5 * width, sbor[2]).distance(Point(xp_kp2 + xp_mid12, h_kp))
+min_kp2_r = Point(0.5 * width, sbor[3]).distance(Point(xp_kp2 + xp_mid12, h_kp))
+max_kp2_r = Point(0.5 * width, sbor[2]).distance(Point(xp_kp2 + xp_mid12, h_kp))
 
-min_up2_l = Point(-0.5 * width, sbor[3]).distance(Point(xp_up2 + xp_mid, h_up))
-max_up2_l = Point(-0.5 * width, sbor[2]).distance(Point(xp_up2 + xp_mid, h_up))
-min_up2_r = Point(0.5 * width, sbor[3]).distance(Point(xp_up2 + xp_mid, h_up))
-max_up2_r = Point(0.5 * width, sbor[2]).distance(Point(xp_up2 + xp_mid, h_up))
+min_up2_l = Point(-0.5 * width, sbor[3]).distance(Point(xp_up2 + xp_mid12, h_up))
+max_up2_l = Point(-0.5 * width, sbor[2]).distance(Point(xp_up2 + xp_mid12, h_up))
+min_up2_r = Point(0.5 * width, sbor[3]).distance(Point(xp_up2 + xp_mid12, h_up))
+max_up2_r = Point(0.5 * width, sbor[2]).distance(Point(xp_up2 + xp_mid12, h_up))
 
-min_ep2_l = Point(-0.5*width, sbor[3]).distance(Point(xp_ep2+xp_mid, h_ep))
-max_ep2_l = Point(-0.5*width, sbor[2]).distance(Point(xp_ep2+xp_mid, h_ep))
-min_ep2_r = Point(0.5*width, sbor[3]).distance(Point(xp_ep2+xp_mid, h_ep))
-max_ep2_r = Point(0.5*width, sbor[2]).distance(Point(xp_ep2+xp_mid, h_ep))
+min_ep2_l = Point(-0.5*width, sbor[3]).distance(Point(xp_ep2+xp_mid12, h_ep))
+max_ep2_l = Point(-0.5*width, sbor[2]).distance(Point(xp_ep2+xp_mid12, h_ep))
+min_ep2_r = Point(0.5*width, sbor[3]).distance(Point(xp_ep2+xp_mid12, h_ep))
+max_ep2_r = Point(0.5*width, sbor[2]).distance(Point(xp_ep2+xp_mid12, h_ep))
 
 min_nt3_l = Point(-0.5 * width, sbor[3]).distance(Point(xp_nt3 + xp_mid13, h_nt))
 max_nt3_l = Point(-0.5 * width, sbor[2]).distance(Point(xp_nt3 + xp_mid13, h_nt))
@@ -270,12 +270,12 @@ def magnetic_calc(x_m, z_m, f_m):
     Iep = part_ep * I_h 
 
     # КП2
-    x = x_m - (xp_kp2 + xp_mid)
+    x = x_m - (xp_kp2 + xp_mid12)
     h1xkp_2 = Ikp / (4 * pi) * (
             -z_m / ((x + xp) ** 2 + z_m ** 2) + (z_m - h_kp) / (x ** 2 + (h_kp - z_m) ** 2))
     h1zkp_2 = Ikp / (4 * pi) * (x + xp) * (
             1 / ((x + xp) ** 2 + z_m ** 2) - 1 / (x ** 2 + (h_kp - z_m) ** 2))
-    x = x_m - 2 * xp - (xp_kp2 + xp_mid)
+    x = x_m - 2 * xp - (xp_kp2 + xp_mid12)
     h2xkp_2 = Ikp / (4 * pi) * (
             -z_m / ((x + xp) ** 2 + z_m ** 2) + (z_m - h_kp) / ((x + 2 * xp) ** 2 + (h_kp - z_m) ** 2))
     h2zkp_2 = Ikp / (4 * pi) * (x + xp) * (
@@ -283,13 +283,13 @@ def magnetic_calc(x_m, z_m, f_m):
 
 
     # НТ2
-    x = x_m - (xp_nt2 + xp_mid)
+    x = x_m - (xp_nt2 + xp_mid12)
     h1xnt_2 = Int / (4 * pi) * (
             -z_m / ((x + xp) ** 2 + z_m ** 2) + (z_m - h_nt) / (x ** 2 + (h_nt - z_m) ** 2))
     h1znt_2 = Int / (4 * pi) * (x + xp) * (
             1 / ((x + xp) ** 2 + z_m ** 2) - 1 / (x ** 2 + (h_nt - z_m) ** 2))
  
-    x = x_m - 2 * xp - (xp_nt2 + xp_mid)
+    x = x_m - 2 * xp - (xp_nt2 + xp_mid12)
     h2xnt_2 = Int / (4 * pi) * (
             -z_m / ((x + xp) ** 2 + z_m ** 2) + (z_m - h_nt) / ((x + 2 * xp) ** 2 + (h_nt - z_m) ** 2))
     h2znt_2 = Int / (4 * pi) * (x + xp) * (
@@ -297,13 +297,13 @@ def magnetic_calc(x_m, z_m, f_m):
  
 
     # УП2
-    x = x_m - (xp_up2 + xp_mid)
+    x = x_m - (xp_up2 + xp_mid12)
     x2 = -xp + xp_up2
     h1xup_2 = Iup / (4 * pi) * (
             -z_m / ((x2 + 2 * xp + x) ** 2 + z_m ** 2) + (z_m - h_up) / (x ** 2 + (h_up - z_m) ** 2))
     h1zup_2 = Iup / (4 * pi) * (x2 + 2 * xp + x) * (
             1 / ((x2 + 2 * xp + x) ** 2 + z_m ** 2) - 1 / (x ** 2 + (h_up - z_m) ** 2))
-    x = x_m - (xp_up2 + xp_mid) - 2 * xp
+    x = x_m - (xp_up2 + xp_mid12) - 2 * xp
     x2 = -xp + xp_up2
     h2xup_2 = Iup / (4 * pi) * (
             -z_m / ((x2 + 2 * xp + x) ** 2 + z_m ** 2) + (z_m - h_up) / ((x + 2 * xp) ** 2 + (h_up - z_m) ** 2))
@@ -312,13 +312,13 @@ def magnetic_calc(x_m, z_m, f_m):
             (x + 2 * xp) ** 2 + (h_up - z_m) ** 2))
 
     # ЭП2
-    x = x_m - (xp_ep2 + xp_mid)
+    x = x_m - (xp_ep2 + xp_mid12)
     x2 = -xp + xp_ep2
     h1xep_2 = Iep / (4 * pi) * (
             -z_m / ((x2 + 2 * xp + x) ** 2 + z_m ** 2) + (z_m - h_ep) / (x ** 2 + (h_ep - z_m) ** 2))
     h1zep_2 = Iep / (4 * pi) * (x2 + 2 * xp + x) * (
             1 / ((x2 + 2 * xp + x) ** 2 + z_m ** 2) - 1 / (x ** 2 + (h_ep - z_m) ** 2))
-    x = x_m - (xp_ep2 + xp_mid) - 2 * xp
+    x = x_m - (xp_ep2 + xp_mid12) - 2 * xp
     x2 = -xp + xp_ep2
     h2xep_2 = Iep / (4 * pi) * (
             -z_m / ((x2 + 2 * xp + x) ** 2 + z_m ** 2) + (z_m - h_ep) / ((x + 2 * xp) ** 2 + (h_ep - z_m) ** 2))
@@ -415,13 +415,13 @@ def electric_calc(x_e, z_e, f_e):
 
 
     U_h = U2 * harm.get(f_e)[1]
-    ekp_scd = U_h * log(1 + 4 * h_nt * z_e / ((x_e - xp_nt2 - xp_mid) ** 2 + (h_nt - z_e) ** 2)) / (
+    ekp_scd = U_h * log(1 + 4 * h_nt * z_e / ((x_e - xp_nt2 - xp_mid12) ** 2 + (h_nt - z_e) ** 2)) / (
                 2 * z_e * log(4 * h_nt / d_nt))
-    ent_scd = U_h * log(1 + 4 * h_kp * z_e / ((x_e - xp_kp2 - xp_mid) ** 2 + (h_kp - z_e) ** 2)) / (
+    ent_scd = U_h * log(1 + 4 * h_kp * z_e / ((x_e - xp_kp2 - xp_mid12) ** 2 + (h_kp - z_e) ** 2)) / (
                 2 * z_e * log(4 * h_kp / d_kp))
-    eup_scd = U_h * log(1 + 4 * h_up * z_e / ((x_e - xp_up2 - xp_mid) ** 2 + (h_up - z_e) ** 2)) / (
+    eup_scd = U_h * log(1 + 4 * h_up * z_e / ((x_e - xp_up2 - xp_mid12) ** 2 + (h_up - z_e) ** 2)) / (
                 2 * z_e * log(4 * h_up / d_up))
-    eep_scd = U_h * log(1 + 4 * h_ep * z_e / ((x_e - xp_ep2 - xp_mid) ** 2 + (h_ep - z_e) ** 2)) / (2 * z_e * log(2 * h_ep / d_ep))
+    eep_scd = U_h * log(1 + 4 * h_ep * z_e / ((x_e - xp_ep2 - xp_mid12) ** 2 + (h_ep - z_e) ** 2)) / (2 * z_e * log(2 * h_ep / d_ep))
 
     U_h = U3 * harm.get(f_e)[1]
 
@@ -487,25 +487,25 @@ def ekran(en):
     ep_pass |= (ep_dist >= min_ep_r) and (ep_dist <= max_ep_r) and (x >= sbor[0]) and (x <= sbor[1]) \
                and (z >= sbor[2]) and (z <= sbor[3])
 
-    kp_sec_dist = Point(y, z).distance(Point(xp_kp2 + xp_mid, h_kp))
+    kp_sec_dist = Point(y, z).distance(Point(xp_kp2 + xp_mid12, h_kp))
     kp_sec_pass = (kp_sec_dist >= min_kp2_l) and (kp_sec_dist <= max_kp2_l) and (x >= sbor[0]) and (x <= sbor[1]) \
                   and (z >= sbor[2]) and (z <= sbor[3])
     kp_sec_pass |= (kp_sec_dist >= min_kp2_r) and (kp_sec_dist <= max_kp2_r) and (x >= sbor[0]) and (x <= sbor[1]) \
                    and (z >= sbor[2]) and (z <= sbor[3])
 
-    nt_sec_dist = Point(y, z).distance(Point(xp_nt2 + xp_mid, h_nt))
+    nt_sec_dist = Point(y, z).distance(Point(xp_nt2 + xp_mid12, h_nt))
     nt_sec_pass = (nt_sec_dist >= min_nt2_l) and (nt_sec_dist <= max_nt2_l) and (x >= sbor[0]) and (x <= sbor[1]) \
                   and (z >= sbor[2]) and (z <= sbor[3])
     nt_sec_pass |= (nt_sec_dist >= min_nt2_r) and (nt_sec_dist <= max_nt2_r) and (x >= sbor[0]) and (x <= sbor[1]) \
                    and (z >= sbor[2]) and (z <= sbor[3])
 
-    up_sec_dist = Point(y, z).distance(Point(xp_up2 + xp_mid, h_up))
+    up_sec_dist = Point(y, z).distance(Point(xp_up2 + xp_mid12, h_up))
     up_sec_pass = (up_sec_dist >= min_up2_l) and (up_sec_dist <= max_up2_l) and (x >= sbor[0]) and (x <= sbor[1]) \
                   and (z >= sbor[2]) and (z <= sbor[3])
     up_sec_pass |= (up_sec_dist >= min_up2_r) and (up_sec_dist <= max_up2_r) and (x >= sbor[0]) and (x <= sbor[1]) \
                    and (z >= sbor[2]) and (z <= sbor[3])
                    
-    ep_sec_dist = Point(y, z).distance(Point(xp_ep2 + xp_mid, h_ep))
+    ep_sec_dist = Point(y, z).distance(Point(xp_ep2 + xp_mid12, h_ep))
     ep_sec_pass = (ep_sec_dist >= min_ep2_l) and (ep_sec_dist <= max_ep2_l) and (x >= sbor[0]) and (x <= sbor[1]) \
                   and (z >= sbor[2]) and (z <= sbor[3])
     ep_sec_pass = (ep_sec_dist >= min_ep2_r) and (ep_sec_dist <= max_ep2_r) and (x >= sbor[0]) and (x <= sbor[1]) \
@@ -637,8 +637,15 @@ print('\nПараметры сети')
 print(f'Высота КП: {h_kp} м')
 print(f'Высота НЧ: {h_nt} м')
 print(f'Высота УП: {h_up} м')
-print(f'Напряжение: {U} Вольт')
-print(f'Суммарный ток: {I} Ампер')
+print('Первый путь')
+print(f'Напряжение: {U1} Вольт')
+print(f'Суммарный ток: {I1} Ампер')
+print('Второй путь')
+print(f'Напряжение: {U2} Вольт')
+print(f'Суммарный ток: {I2} Ампер')
+print('Третий путь')
+print(f'Напряжение: {U3} Вольт')
+print(f'Суммарный ток: {I3} Ампер')
 print(f'Высота среза: {z_graph} метров')
 
 # РАСЧЁТ ТАБЛИЦ
