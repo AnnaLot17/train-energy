@@ -457,7 +457,7 @@ def visual_up():
         plt.colorbar()
 
         # рисование и подпись проводов
-         for delta_y in [xp_kp, xp_up, xp_nt, xp_ep]:
+        for delta_y in [xp_kp, xp_up, xp_nt, xp_ep]:
             plt.hlines(delta_y, Xmin, Xmax, color='black', linewidth=2)
         plt.text(-.5, xp_kp - 0.1, 'КП', color='black')
         plt.text(-.5, xp_up - 0.1, 'УП', color='black')

@@ -576,7 +576,7 @@ def visual_up():
         plt.colorbar()
 
         # рисование и подпись проводов
-       for delta_y in [xp_kp, xp_up, xp_nt, xp_kp2 + xp_mid, xp_nt2 + xp_mid, xp_up2 + xp_mid, xp_ep, xp_ep2+xp_mid]:
+        for delta_y in [xp_kp, xp_up, xp_nt, xp_kp2 + xp_mid, xp_nt2 + xp_mid, xp_up2 + xp_mid, xp_ep, xp_ep2+xp_mid]:
             plt.hlines(delta_y, Xmin, Xmax, color='black', linewidth=2)
         plt.text(-.5, xp_kp - 0.1, 'КП', color='black')
         plt.text(-.5, xp_up - 0.1, 'УП', color='black')
@@ -946,7 +946,7 @@ def visual_up_reflect(ext_f):
     plt.colorbar()
 
     # рисование и подпись проводов
-   for delta_y in [xp_kp, xp_up, xp_nt, xp_kp2 + xp_mid, xp_nt2 + xp_mid, xp_up2 + xp_mid, xp_ep, xp_ep2+xp_mid]:
+    for delta_y in [xp_kp, xp_up, xp_nt, xp_kp2 + xp_mid, xp_nt2 + xp_mid, xp_up2 + xp_mid, xp_ep, xp_ep2+xp_mid]:
         plt.hlines(delta_y, Xmin, Xmax, color='black', linewidth=2)
     plt.text(-.5, xp_kp - 0.1, 'КП', color='black')
     plt.text(-.5, xp_up - 0.1, 'УП', color='black')

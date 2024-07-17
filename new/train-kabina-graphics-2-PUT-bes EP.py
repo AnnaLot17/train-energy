@@ -739,7 +739,7 @@ def glass_reflect(x, y, z):
            (sbor[3]+sbor[2]) - h_nt,
            (sbor[3]+sbor[2]) - h_up]
     x_p = [xp_kp, xp_nt, xp_up, xp_kp2 + xp_mid, xp_nt2 + xp_mid, xp_up2 + xp_mid]
-   I_p = [part_kp, part_nt, part_up, part_kp, part_nt, part_up]
+    I_p = [part_kp, part_nt, part_up, part_kp, part_nt, part_up]
     d_p = [d_kp, d_nt, d_up, d_kp, d_nt, d_up]
 
   
