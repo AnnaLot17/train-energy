@@ -15,15 +15,15 @@ from shapely.geometry import Polygon, LineString, Point
 
 # первый путь
 I1 = 300  # cуммарная сила тока, А
-U1 = 30000  # cуммарное напряжение, В
+U1 = 27000  # cуммарное напряжение, В
 
 # второй путь
 I2 = 300  # cуммарная сила тока, А
-U2 = 30000  # cуммарное напряжение, В
+U2 = 27000  # cуммарное напряжение, В
 
 # третий путь
 I3 = 300  # cуммарная сила тока, А
-U3 = 30000  # cуммарное напряжение, В
+U3 = 27000  # cуммарное напряжение, В
 
 # распределение тока по проводам
 part_kp = 0.35
@@ -324,8 +324,22 @@ def magnetic_calc(x_m, z_m, f_m):
     h2zup_3 = Iup / (4 * pi) * (
             (x2 + 2 * xp + x) / ((x2 + 2 * xp + x) ** 2 + z_m ** 2) - (x + 2 * xp) / (
                 (x + 2 * xp) ** 2 + (h_up - z_m) ** 2))
-
-
+    '''
+    print('Ось х')
+    print('кп 1 и 2 рельс', 'нт 1 и 2 рельс', 'уп 1 и 2 рельс', sep='\t')
+    # Сумма всех магнитных полей по оси x        
+    print(h1xkp, h2xkp, h1xnt, h2xnt, h1xup, h2xup, '\n',
+              h1xkp_2, h2xkp_2, h1xnt_2, h2xnt_2, h1xup_2, h2xup_2,'\n',
+              h1xkp_3, h2xkp_3, h1xnt_3, h2xnt_3, h1xup_3, h2xup_3, '\n', sep='\t')
+    print('Ось z')
+    print('кп 1 и 2 рельс', 'нт 1 и 2 рельс', 'уп 1 и 2 рельс', sep='\t')
+    # Сумма всех магнитных полей по оси z
+    print(h1zkp, h2zkp, h1znt, h2znt, h1zup, h2zup, '\n',
+              h1zkp_2, h2zkp_2, h1znt_2, h2znt_2, h1zup_2, h2zup_2, '\n',
+              h1zkp_3, h2zkp_3, h1znt_3, h2znt_3, h1zup_3, h2zup_3, '\n', sep='\t')
+    input()
+    '''
+    
     # Сумма всех магнитных полей по оси x        
     hx = sum([h1xkp, h2xkp, h1xnt, h2xnt, h1xup, h2xup, 
               h1xkp_2, h2xkp_2, h1xnt_2, h2xnt_2, h1xup_2, h2xup_2,
@@ -341,45 +355,78 @@ def magnetic_calc(x_m, z_m, f_m):
     return h
 
 
+
 # расчёт электрического поля для гармоники f в точке x, z
 def electric_calc(x_e, z_e, f_e):
     U_h = U1 * harm.get(f_e)[1]
+    
+    a = x_e - xp_kp
+    ekpx = U_h * a / log(2 * h_kp / d_kp) * (1 / ((h_kp - z_e) ** 2 + a ** 2) - 1 / ((h_kp + z_e) ** 2 + a ** 2)) 
+    ekpz = U_h / log(2 * h_kp / d_kp) * ((h_kp - z_e) / ((h_kp - z_e) ** 2 + a ** 2) + ((h_kp + z_e)) / ((h_kp + z_e) ** 2 + a ** 2)) 
 
-    ekp = U_h * log(1 + 4 * h_nt * z_e / ((x_e - xp_nt) ** 2 + (h_nt - z_e) ** 2)) / (2 * z_e * log(4 * h_nt / d_nt))
-    ent = U_h * log(1 + 4 * h_kp * z_e / ((x_e - xp_kp) ** 2 + (h_kp - z_e) ** 2)) / (2 * z_e * log(4 * h_kp / d_kp))
-    eup = U_h * log(1 + 4 * h_up * z_e / ((x_e - xp_up) ** 2 + (h_up - z_e) ** 2)) / (2 * z_e * log(4 * h_up / d_up))
+    a = x_e - xp_nt
+    entx = U_h * a / log(2 * h_nt / d_nt) * (1 / ((h_nt - z_e) ** 2 + a ** 2) - 1 / ((h_nt + z_e) ** 2 + a ** 2)) 
+    entz = U_h / log(2 * h_nt / d_nt) * ((h_nt - z_e) / ((h_nt - z_e) ** 2 + a ** 2) + ((h_nt + z_e)) / ((h_nt + z_e) ** 2 + a ** 2)) 
+
+    a = x_e - xp_up
+    eupx = U_h * a / log(2 * h_up / d_up) * (1 / ((h_up - z_e) ** 2 + a ** 2) - 1 / ((h_up + z_e) ** 2 + a ** 2))
+    eupz = U_h / log(2 * h_up / d_up) * ((h_up - z_e) / ((h_up - z_e) ** 2 + a ** 2) + ((h_up + z_e)) / ((h_up + z_e) ** 2 + a ** 2)) 
+    
 
     U_h = U2 * harm.get(f_e)[1]
-    ekp_scd = U_h * log(1 + 4 * h_nt * z_e / ((x_e - xp_nt2 - xp_mid12) ** 2 + (h_nt - z_e) ** 2)) / (
-                2 * z_e * log(4 * h_nt / d_nt))
-    ent_scd = U_h * log(1 + 4 * h_kp * z_e / ((x_e - xp_kp2 - xp_mid12) ** 2 + (h_kp - z_e) ** 2)) / (
-                2 * z_e * log(4 * h_kp / d_kp))
-    eup_scd = U_h * log(1 + 4 * h_up * z_e / ((x_e - xp_up2 - xp_mid12) ** 2 + (h_up - z_e) ** 2)) / (
-                2 * z_e * log(4 * h_up / d_up))
+    
+    a = x_e - xp_kp2 - xp_mid12
+    ekpx2 = U_h * a / log(2 * h_kp / d_kp) * (1 / ((h_kp - z_e) ** 2 + a ** 2) - 1 / ((h_kp + z_e) ** 2 + a ** 2)) 
+    ekpz2 = U_h / log(2 * h_kp / d_kp) * ((h_kp - z_e) / ((h_kp - z_e) ** 2 + a ** 2) + ((h_kp + z_e)) / ((h_kp + z_e) ** 2 + a ** 2)) 
+
+    a = x_e - xp_nt2 - xp_mid12
+    entx2 = U_h * a / log(2 * h_nt / d_nt) * (1 / ((h_nt - z_e) ** 2 + a ** 2) - 1 / ((h_nt + z_e) ** 2 + a ** 2)) 
+    entz2 = U_h / log(2 * h_nt / d_nt) * ((h_nt - z_e) / ((h_nt - z_e) ** 2 + a ** 2) + ((h_nt + z_e)) / ((h_nt + z_e) ** 2 + a ** 2)) 
+
+    a = x_e - xp_up2 - xp_mid12
+    eupx2 = U_h * a / log(2 * h_up / d_up) * (1 / ((h_up - z_e) ** 2 + a ** 2) - 1 / ((h_up + z_e) ** 2 + a ** 2)) 
+    eupz2 = U_h / log(2 * h_up / d_up) * ((h_up - z_e) / ((h_up - z_e) ** 2 + a ** 2) + ((h_up + z_e)) / ((h_up + z_e) ** 2 + a ** 2)) 
 
 
     U_h = U3 * harm.get(f_e)[1]
+    
+    a = x_e - xp_kp2 - xp_mid13
+    ekpx3 = U_h * a / log(2 * h_kp / d_kp) * (1 / ((h_kp - z_e) ** 2 + a ** 2) - 1 / ((h_kp + z_e) ** 2 + a ** 2)) 
+    ekpz3 = U_h / log(2 * h_kp / d_kp) * ((h_kp - z_e) / ((h_kp - z_e) ** 2 + a ** 2) + ((h_kp + z_e)) / ((h_kp + z_e) ** 2 + a ** 2)) 
 
-    ekp_thd = U_h * log(1 + 4 * h_nt * z_e / ((x_e - xp_nt2 - xp_mid13) ** 2 + (h_nt - z_e) ** 2)) / (
-                2 * z_e * log(2 * h_nt / d_nt))
-    ent_thd = U_h * log(1 + 4 * h_kp * z_e / ((x_e - xp_kp2 - xp_mid13) ** 2 + (h_kp - z_e) ** 2)) / (
-                2 * z_e * log(2 * h_kp / d_kp))
-    eup_thd = U_h * log(1 + 4 * h_up * z_e / ((x_e - xp_up2 - xp_mid13) ** 2 + (h_up - z_e) ** 2)) / (
-                2 * z_e * log(2 * h_up / d_up))
+    a = x_e - xp_nt3 - xp_mid13
+    entx3 = U_h * a / log(2 * h_nt / d_nt) * (1 / ((h_nt - z_e) ** 2 + a ** 2) - 1 / ((h_nt + z_e) ** 2 + a ** 2)) 
+    entz3 = U_h / log(2 * h_nt / d_nt) * ((h_nt - z_e) / ((h_nt - z_e) ** 2 + a ** 2) + ((h_nt + z_e)) / ((h_nt + z_e) ** 2 + a ** 2)) 
 
+    a = x_e - xp_up2 - xp_mid13
+    eupx3 = U_h * a / log(2 * h_up / d_up) * (1 / ((h_up - z_e) ** 2 + a ** 2) - 1 / ((h_up + z_e) ** 2 + a ** 2)) 
+    eupz3 = U_h / log(2 * h_up / d_up) * ((h_up - z_e) / ((h_up - z_e) ** 2 + a ** 2) + ((h_up + z_e)) / ((h_up + z_e) ** 2 + a ** 2)) 
 
-    return sum([ekp, ent, eup, ekp_scd, ent_scd, eup_scd, ekp_thd, ent_thd, eup_thd])
-
+ 
+    # Сумма всех электрических полей по оси x        
+    ex = sum([ekpx, entx, eupx,
+              ekpx2, entx2, eupx2,
+              ekpx3, entx3, eupx3,])
+    # Сумма всех электрических полей по оси z
+    ez = sum([ekpz, entz, eupz,
+              ekpz2, entz2, eupz2,
+              ekpz3, entz3, eupz3])
+    # Итоговое электрических поле по теореме Пифагора:
+    e = mix(ex, ez)
+    
+    # результат - значение электрических поля в этой точке для выбранной гармоники
+    return e
 
 
 # суммироввание всех полей всех гармоник и подсчёт энергии для каждой точки:
 def full_field(res_en):
-    sum_h, sum_e = 0, 0
+    sum_h, sum_e, sum_eng = 0, 0, 0
     # cумма полей по гармоникам
     for en in res_en[0].values():
         sum_h += en[0]  # магнитная составляющая
         sum_e += en[1]  # электрическая составляющая
-    return sum_h, sum_e, sum_h*sum_e  # энергия - произведение магнитного и электрического поля
+        sum_eng += en[0] * en[1]
+    return sum_h, sum_e, sum_eng  # энергия - произведение магнитного и электрического поля
 
 
 
@@ -565,8 +612,8 @@ print(f'Высота среза: {z_graph} метров')
 # РАСЧЁТ ТАБЛИЦ
 
 print('\nРасчёт поля........\n')
-cont_f_front = visual_front()
-visual_front_locomotive(cont_f_front)
+#cont_f_front = visual_front()
+#visual_front_locomotive(cont_f_front)
 
 # РАСЧЁТ СТАТИСТИКИ
 
@@ -576,6 +623,7 @@ p = ti / 24  # статистическая вероятность воздей�
 
 chel_f_per = [{fr: [magnetic_calc(y_chel, z_chel, fr), electric_calc(y_chel, z_chel, fr)] for fr in harm.keys()},
               (x_chel, y_chel, z_chel)]
+print(*chel_f_per)
 no_ekran_per = full_field(chel_f_per)[2]
 print('\nПеременное поле без экрана: %.4f' % no_ekran_per)
 

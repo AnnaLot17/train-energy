@@ -180,28 +180,41 @@ def magnetic_calc(x_m, z_m, f_m):
 
 
 # расчёт электрического поля для гармоники f в точке x, z
-def electric_calc(x_e, z_e, f_e, reflect=False):
-    # напряжение гармоники
+def electric_calc(x_e, z_e, f_e):
     U_h = U * harm.get(f_e)[1]
+    
+    a = x_e - xp_kp
+    ekpx = U_h * a / log(2 * h_kp / d_kp) * (1 / ((h_kp - z_e) ** 2 + a ** 2) - 1 / ((h_kp + z_e) ** 2 + a ** 2)) 
+    ekpz = U_h / log(2 * h_kp / d_kp) * ((h_kp - z_e) / ((h_kp - z_e) ** 2 + a ** 2) + ((h_kp + z_e)) / ((h_kp + z_e) ** 2 + a ** 2)) 
 
-    # электрическое поле от каждого провода
-    ekp = U_h * log(1 + 4 * h_nt * z_e / ((x_e - xp_nt) ** 2 + (h_nt - z_e) ** 2)) / (2 * z_e * log(2 * h_nt / d_nt))
-    ent = U_h * log(1 + 4 * h_kp * z_e / ((x_e - xp_kp) ** 2 + (h_kp - z_e) ** 2)) / (2 * z_e * log(2 * h_kp / d_kp))
-    eup = U_h * log(1 + 4 * h_up * z_e / ((x_e - xp_up) ** 2 + (h_up - z_e) ** 2)) / (2 * z_e * log(2 * h_up / d_up))
+    a = x_e - xp_nt
+    entx = U_h * a / log(2 * h_nt / d_nt) * (1 / ((h_nt - z_e) ** 2 + a ** 2) - 1 / ((h_nt + z_e) ** 2 + a ** 2)) 
+    entz = U_h / log(2 * h_nt / d_nt) * ((h_nt - z_e) / ((h_nt - z_e) ** 2 + a ** 2) + ((h_nt + z_e)) / ((h_nt + z_e) ** 2 + a ** 2)) 
 
-    # результат - сумма значений полей от каждого провода
-    return sum([ekp, ent, eup])
+    a = x_e - xp_up
+    eupx = U_h * a / log(2 * h_up / d_up) * (1 / ((h_up - z_e) ** 2 + a ** 2) - 1 / ((h_up + z_e) ** 2 + a ** 2))
+    eupz = U_h / log(2 * h_up / d_up) * ((h_up - z_e) / ((h_up - z_e) ** 2 + a ** 2) + ((h_up + z_e)) / ((h_up + z_e) ** 2 + a ** 2)) 
+
+    # Сумма всех электрических полей по оси x        
+    ex = sum([ekpx, entx, eupx])
+    # Сумма всех электрических полей по оси z
+    ez = sum([ekpz, entz, eupz])
+    # Итоговое электрических поле по теореме Пифагора:
+    e = mix(ex, ez)
+    
+    # результат - значение электрических поля в этой точке для выбранной гармоники
+    return e
 
 
 # суммироввание всех полей всех гармоник и подсчёт энергии для каждой точки:
 def full_field(res_en):
-    sum_h, sum_e = 0, 0
+    sum_h, sum_e, sum_eng = 0, 0, 0
     # cумма полей по гармоникам
     for en in res_en[0].values():
         sum_h += en[0]  # магнитная составляющая
         sum_e += en[1]  # электрическая составляющая
-    return sum_h, sum_e, sum_h*sum_e  # энергия - произведение магнитного и электрического поля
-
+        sum_eng += en[0] * en[1]
+    return sum_h, sum_e, sum_eng  # энергия - произведение магнитного и электрического поля
 
 #  расчёт экрана переменного поля
 def ekran(en):
@@ -649,7 +662,7 @@ def glass_reflect(x, y, z):
         h = 0
                
         for f in harm.keys():
-            hx, hz = 0, 0
+            hx, hz, ex, ez = 0, 0, 0, 0
             for i in range(0,3):
                 I_h = I_p[i] * harm[f][0]
 
@@ -658,10 +671,16 @@ def glass_reflect(x, y, z):
                 hz += I_h / (4 * pi) * x_m / (x_m ** 2 + (h_p[i] - z) ** 2)
                 hx += I_h / (4 * pi) * (z - h_p[i]) / (x_m ** 2 + (h_p[i] - z) ** 2)
                 hz += I_h / (4 * pi) * x_m / (x_m ** 2 + (h_p[i] - z) ** 2)
+
+               
+                U_h = U * harm[f][1] 
+                a = x_m
+                ex += U_h * a / log(2 * abs(h_p[i]) / d_p[i]) * (1 / ((h_p[i] - z) ** 2 + a ** 2) - 1 / ((h_p[i] + z) ** 2 + a ** 2)) 
+                ez += U_h / log(2 * abs(h_p[i]) / d_p[i]) * ((h_p[i] - z) / ((h_p[i] - z) ** 2 + a ** 2) + ((h_p[i] + z)) / ((h_p[i] + z) ** 2 + a ** 2)) 
                 
-                U_h = U * harm[f][1]
-                e += abs(U_h * log(1 + 4 * h_p[i] * z / (x_m ** 2 + (h_p[i] - z) ** 2)) / (2 * z * log(2 * abs(h_p[i]) / d_p[i])))
+                
             h += mix(hx, hz)
+            e += mix(ex, ez)
         return e*h
  
     kp_dist = Point(y, z).distance(Point(xp_kp, h_p[0]))  # расстояние от точки до провода
@@ -699,13 +718,7 @@ def steel_reflect(y, z, x=None):
 
     E = 0
     for f in harm.keys():
-        U_h = U * harm[f][1]
-
-        # электрическое поле от каждого провода
-        E += U_h * log(1 + 4 * h_kp * z / ((y - xp_kp) ** 2 + (h_kp - z) ** 2)) / (2 * z * log(2 * h_kp / d_kp))
-        E += U_h * log(1 + 4 * h_nt * z / ((y - xp_nt) ** 2 + (h_nt - z) ** 2)) / (2 * z * log(2 * h_nt / d_nt))
-        E += U_h * log(1 + 4 * h_up * z / ((y - xp_up) ** 2 + (h_up - z) ** 2)) / (2 * z * log(2 * h_up / d_up))
-
+        E += electric_calc(y, z, f)
     return E
 
 
@@ -787,7 +800,7 @@ def visual_front_reflect(ext_f):
     # перевод в конечные значения внешнего поля с экраном
     summar_ext = np.array([[full_field(ekran(x_el))[2] for x_el in y_list] for y_list in ext_f])
     # вычитаем из поля внешнего поле отражённое
-    summar = summar_ext - summar_reflect
+    summar = np.absolute(summar_ext - summar_reflect)
 
     global gph_num
     gph_num += 1
@@ -870,7 +883,6 @@ p = ti / 24  # статистическая вероятность воздей�
 
 chel_f_per = [{fr: [magnetic_calc(y_chel, z_chel, fr), electric_calc(y_chel, z_chel, fr)] for fr in harm.keys()},
               (x_chel, y_chel, z_chel)]
-print(chel_f_per)
 no_ekran_per = full_field(chel_f_per)[2]
 print('\nПеременное поле без экрана: %.4f' % no_ekran_per)
 

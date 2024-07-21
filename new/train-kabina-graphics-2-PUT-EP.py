@@ -293,35 +293,66 @@ def magnetic_calc(x_m, z_m, f_m):
 
 
 
+
 # расчёт электрического поля для гармоники f в точке x, z
 def electric_calc(x_e, z_e, f_e):
     U_h = U * harm.get(f_e)[1]
+    
+    a = x_e - xp_kp
+    ekpx = U_h * a / log(2 * h_kp / d_kp) * (1 / ((h_kp - z_e) ** 2 + a ** 2) - 1 / ((h_kp + z_e) ** 2 + a ** 2)) 
+    ekpz = U_h / log(2 * h_kp / d_kp) * ((h_kp - z_e) / ((h_kp - z_e) ** 2 + a ** 2) + ((h_kp + z_e)) / ((h_kp + z_e) ** 2 + a ** 2)) 
 
-    ekp = U_h * log(1 + 4 * h_nt * z_e / ((x_e - xp_nt) ** 2 + (h_nt - z_e) ** 2)) / (2 * z_e * log(4 * h_nt / d_nt))
-    ent = U_h * log(1 + 4 * h_kp * z_e / ((x_e - xp_kp) ** 2 + (h_kp - z_e) ** 2)) / (2 * z_e * log(4 * h_kp / d_kp))
-    eup = U_h * log(1 + 4 * h_up * z_e / ((x_e - xp_up) ** 2 + (h_up - z_e) ** 2)) / (2 * z_e * log(4 * h_up / d_up))
-    eep = U_h * log(1 + 4 * h_ep * z_e / ((x_e - xp_ep) ** 2 + (h_ep - z_e) ** 2)) / (2 * z_e * log(2 * h_ep / d_ep))
+    a = x_e - xp_nt
+    entx = U_h * a / log(2 * h_nt / d_nt) * (1 / ((h_nt - z_e) ** 2 + a ** 2) - 1 / ((h_nt + z_e) ** 2 + a ** 2)) 
+    entz = U_h / log(2 * h_nt / d_nt) * ((h_nt - z_e) / ((h_nt - z_e) ** 2 + a ** 2) + ((h_nt + z_e)) / ((h_nt + z_e) ** 2 + a ** 2)) 
 
-    ekp_scd = U_h * log(1 + 4 * h_nt * z_e / ((x_e - xp_nt2 - xp_mid) ** 2 + (h_nt - z_e) ** 2)) / (
-                2 * z_e * log(4 * h_nt / d_nt))
-    ent_scd = U_h * log(1 + 4 * h_kp * z_e / ((x_e - xp_kp2 - xp_mid) ** 2 + (h_kp - z_e) ** 2)) / (
-                2 * z_e * log(4 * h_kp / d_kp))
-    eup_scd = U_h * log(1 + 4 * h_up * z_e / ((x_e - xp_up2 - xp_mid) ** 2 + (h_up - z_e) ** 2)) / (
-                2 * z_e * log(4 * h_up / d_up))
-    eep_scd = U_h * log(1 + 4 * h_ep * z_e / ((x_e - xp_ep2 - xp_mid) ** 2 + (h_ep - z_e) ** 2)) / (2 * z_e * log(2 * h_ep / d_ep))
+    a = x_e - xp_up
+    eupx = U_h * a / log(2 * h_up / d_up) * (1 / ((h_up - z_e) ** 2 + a ** 2) - 1 / ((h_up + z_e) ** 2 + a ** 2))
+    eupz = U_h / log(2 * h_up / d_up) * ((h_up - z_e) / ((h_up - z_e) ** 2 + a ** 2) + ((h_up + z_e)) / ((h_up + z_e) ** 2 + a ** 2)) 
 
-    return sum([ekp, ent, eup, -eep, ekp_scd, ent_scd, eup_scd, -eep_scd])
+    a = x_e - xp_ep
+    eepx = -U_h * a / log(2 * h_ep / d_ep) * (1 / ((h_ep - z_e) ** 2 + a ** 2) - 1 / ((h_ep + z_e) ** 2 + a ** 2)) 
+    eepz = -U_h / log(2 * h_ep / d_ep) * ((h_ep - z_e) / ((h_ep - z_e) ** 2 + a ** 2) + ((h_ep + z_e)) / ((h_ep + z_e) ** 2 + a ** 2)) 
+    
+    a = x_e - xp_kp2 - xp_mid
+    ekpx2 = U_h * a / log(2 * h_kp / d_kp) * (1 / ((h_kp - z_e) ** 2 + a ** 2) - 1 / ((h_kp + z_e) ** 2 + a ** 2)) 
+    ekpz2 = U_h / log(2 * h_kp / d_kp) * ((h_kp - z_e) / ((h_kp - z_e) ** 2 + a ** 2) + ((h_kp + z_e)) / ((h_kp + z_e) ** 2 + a ** 2)) 
+
+    a = x_e - xp_nt2 - xp_mid
+    entx2 = U_h * a / log(2 * h_nt / d_nt) * (1 / ((h_nt - z_e) ** 2 + a ** 2) - 1 / ((h_nt + z_e) ** 2 + a ** 2)) 
+    entz2 = U_h / log(2 * h_nt / d_nt) * ((h_nt - z_e) / ((h_nt - z_e) ** 2 + a ** 2) + ((h_nt + z_e)) / ((h_nt + z_e) ** 2 + a ** 2)) 
+
+    a = x_e - xp_up2 - xp_mid
+    eupx2 = U_h * a / log(2 * h_up / d_up) * (1 / ((h_up - z_e) ** 2 + a ** 2) - 1 / ((h_up + z_e) ** 2 + a ** 2)) 
+    eupz2 = U_h / log(2 * h_up / d_up) * ((h_up - z_e) / ((h_up - z_e) ** 2 + a ** 2) + ((h_up + z_e)) / ((h_up + z_e) ** 2 + a ** 2)) 
+
+    a = x_e - xp_ep2 - xp_mid
+    eepx2 = -U_h * a / log(2 * h_ep / d_ep) * (1 / ((h_ep - z_e) ** 2 + a ** 2) - 1 / ((h_ep + z_e) ** 2 + a ** 2)) 
+    eepz2 = -U_h / log(2 * h_ep / d_ep) * ((h_ep - z_e) / ((h_ep - z_e) ** 2 + a ** 2) + ((h_ep + z_e)) / ((h_ep + z_e) ** 2 + a ** 2)) 
+  
+    # Сумма всех электрических полей по оси x        
+    ex = sum([ekpx, entx, eupx, eepx,
+              ekpx2, entx2, eupx2, eepx2])
+    # Сумма всех электрических полей по оси z
+    ez = sum([ekpz, entz, eupz, eepz,
+              ekpz2, entz2, eupz2, eepz2])
+    # Итоговое электрических поле по теореме Пифагора:
+    e = mix(ex, ez)
+    
+    # результат - значение электрических поля в этой точке для выбранной гармоники
+    return e
 
 
 # суммироввание всех полей всех гармоник и подсчёт энергии для каждой точки:
 def full_field(res_en):
-    sum_h, sum_e = 0, 0
+    sum_h, sum_e, sum_eng = 0, 0, 0
     # cумма полей по гармоникам
     for en in res_en[0].values():
         sum_h += en[0]  # магнитная составляющая
         sum_e += en[1]  # электрическая составляющая
-    return sum_h, sum_e, sum_h*sum_e  # энергия - произведение магнитного и электрического поля
-
+        sum_eng += en[0] * en[1]
+    return sum_h, sum_e, sum_eng  # энергия - произведение магнитного и электрического поля
+	
 
 #  расчёт экрана переменного поля
 def ekran(en):
@@ -818,22 +849,27 @@ def glass_reflect(x, y, z):
         h = 0
                
         for f in harm.keys():
-            hx, hz = 0, 0
+            hx, hz, ex, ez = 0, 0, 0, 0
             for i in range(0,6):
                 I_h = I_p[i] * harm[f][0]
-
                 x_m = y - x_p[i]
                 hx += I_h / (4 * pi) * (z - h_p[i]) / (x_m ** 2 + (h_p[i] - z) ** 2)
                 hz += I_h / (4 * pi) * x_m / (x_m ** 2 + (h_p[i] - z) ** 2)
-                hx += I_h / (4 * pi) * (z - h_p[i]) / (x_m ** 2 + (h_p[i] - z) ** 2)
-                hz += I_h / (4 * pi) * x_m / (x_m ** 2 + (h_p[i] - z) ** 2)
                 
-                U_h = U * harm[f][1]
+                U_h = U * harm[f][1] 
+                a = x_m
+                ex_ = U_h * a / log(2 * abs(h_p[i]) / d_p[i]) * (1 / ((h_p[i] - z) ** 2 + a ** 2) - 1 / ((h_p[i] + z) ** 2 + a ** 2)) 
+                ez_ = U_h / log(2 * abs(h_p[i]) / d_p[i]) * ((h_p[i] - z) / ((h_p[i] - z) ** 2 + a ** 2) + ((h_p[i] + z)) / ((h_p[i] + z) ** 2 + a ** 2)) 
+                
                 if i == 3 or i == 7:
-                    e -= abs(U_h * log(1 + 4 * h_p[i] * z / (x_m ** 2 + (h_p[i] - z) ** 2)) / (2 * z * log(2 * abs(h_p[i]) / d_p[i])))
+                    ex -= ex_
+                    ez -= ez_
                 else:
-                    e += abs(U_h * log(1 + 4 * h_p[i] * z / (x_m ** 2 + (h_p[i] - z) ** 2)) / (2 * z * log(2 * abs(h_p[i]) / d_p[i])))
+                    ex += ex_
+                    ez += ez_
+                
             h += mix(hx, hz)
+            e += mix(ex, ez)
         return e*h
 
 
@@ -893,18 +929,7 @@ def steel_reflect(y, z, x=None):
 
     E = 0
     for f in harm.keys():
-        U_h = U * harm[f][1]
-
-        # электрическое поле от каждого провода
-        E += U_h * log(1 + 4 * h_kp * z / ((y - xp_kp) ** 2 + (h_kp - z) ** 2)) / (2 * z * log(2 * h_kp / d_kp))
-        E += U_h * log(1 + 4 * h_nt * z / ((y - xp_nt) ** 2 + (h_nt - z) ** 2)) / (2 * z * log(2 * h_nt / d_nt))
-        E += U_h * log(1 + 4 * h_up * z / ((y - xp_up) ** 2 + (h_up - z) ** 2)) / (2 * z * log(2 * h_up / d_up))
-        E += U_h * log(1 + 4 * h_nt * z / ((y - xp_nt2 - xp_mid) ** 2 + (h_nt - z) ** 2)) / (
-                2 * z * log(2 * h_nt / d_nt))
-        E += U_h * log(1 + 4 * h_kp * z / ((y - xp_kp2 - xp_mid) ** 2 + (h_kp - z) ** 2)) / (
-                2 * z * log(2 * h_kp / d_kp))
-        E += U_h * log(1 + 4 * h_up * z / ((y - xp_up2 - xp_mid) ** 2 + (h_up - z) ** 2)) / (
-                2 * z * log(2 * h_up / d_up))
+        E += electric_calc(y, z, f)
     return E
 
 
@@ -929,7 +954,7 @@ def visual_up_reflect(ext_f):
     # перевод в конечные значения внешнего поля с экраном
     summar_ext = np.array([[full_field(el)[2] for el in x_list] for x_list in ext_f])
     # # вычитаем из поля внешнего поле отражённое
-    summar = summar_ext - summar_reflect
+    summar = np.absolute(summar_ext - summar_reflect)
 
     global gph_num
     gph_num += 1
@@ -991,7 +1016,7 @@ def visual_front_reflect(ext_f):
     # перевод в конечные значения внешнего поля с экраном
     summar_ext = np.array([[full_field(x_el)[2] for x_el in y_list] for y_list in ext_f])
     # вычитаем из поля внешнего поле отражённое
-    summar = summar_ext - summar_reflect
+    summar = np.absolute(summar_ext - summar_reflect)
 
     global gph_num
     gph_num += 1
