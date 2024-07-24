@@ -328,22 +328,7 @@ def magnetic_calc(x_m, z_m, f_m):
     h2zup_3 = Iup / (4 * pi) * (
             (x2 + 2 * xp + x) / ((x2 + 2 * xp + x) ** 2 + z_m ** 2) - (x + 2 * xp) / (
                 (x + 2 * xp) ** 2 + (h_up - z_m) ** 2))
-    '''
-    print('Ось х')
-    print('кп 1 и 2 рельс', 'нт 1 и 2 рельс', 'уп 1 и 2 рельс', sep='\t')
-    # Сумма всех магнитных полей по оси x        
-    print(h1xkp, h2xkp, h1xnt, h2xnt, h1xup, h2xup, '\n',
-              h1xkp_2, h2xkp_2, h1xnt_2, h2xnt_2, h1xup_2, h2xup_2,'\n',
-              h1xkp_3, h2xkp_3, h1xnt_3, h2xnt_3, h1xup_3, h2xup_3, '\n', sep='\t')
-    print('Ось z')
-    print('кп 1 и 2 рельс', 'нт 1 и 2 рельс', 'уп 1 и 2 рельс', sep='\t')
-    # Сумма всех магнитных полей по оси z
-    print(h1zkp, h2zkp, h1znt, h2znt, h1zup, h2zup, '\n',
-              h1zkp_2, h2zkp_2, h1znt_2, h2znt_2, h1zup_2, h2zup_2, '\n',
-              h1zkp_3, h2zkp_3, h1znt_3, h2znt_3, h1zup_3, h2zup_3, '\n', sep='\t')
-    input()
-    '''
-    
+
     # Сумма всех магнитных полей по оси x        
     hx1 = sum([h1xkp, h2xkp, h1xnt, h2xnt, h1xup, h2xup])
     hx2 = sum([h1xkp_2, h2xkp_2, h1xnt_2, h2xnt_2, h1xup_2, h2xup_2])
