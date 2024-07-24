@@ -1,8 +1,8 @@
-from math import log, pi, atan, exp
-
+from math import log, pi, atan, exp, sin
 import matplotlib.pyplot as plt
 import numpy as np
 from shapely.geometry import Polygon, LineString, Point
+import pprint
 
 # РЕЖИМ РАБОТЫ СЕТИ
 
@@ -29,6 +29,10 @@ U3 = 27000  # cуммарное напряжение, В
 part_kp = 0.35
 part_nt = 0.15
 part_up = 0.50
+
+# УГЛЫ
+
+alpha = 5*pi/6  # угол между электрическим и магнитным поле
 
 
 # СТАТИСТИЧЕСКИЕ ДАННЫЕ
@@ -341,18 +345,20 @@ def magnetic_calc(x_m, z_m, f_m):
     '''
     
     # Сумма всех магнитных полей по оси x        
-    hx = sum([h1xkp, h2xkp, h1xnt, h2xnt, h1xup, h2xup, 
-              h1xkp_2, h2xkp_2, h1xnt_2, h2xnt_2, h1xup_2, h2xup_2,
-              h1xkp_3, h2xkp_3, h1xnt_3, h2xnt_3, h1xup_3, h2xup_3])
+    hx1 = sum([h1xkp, h2xkp, h1xnt, h2xnt, h1xup, h2xup])
+    hx2 = sum([h1xkp_2, h2xkp_2, h1xnt_2, h2xnt_2, h1xup_2, h2xup_2])
+    hx3 = sum([h1xkp_3, h2xkp_3, h1xnt_3, h2xnt_3, h1xup_3, h2xup_3])
     # Сумма всех магнитных полей по оси z
-    hz = sum([h1zkp, h2zkp, h1znt, h2znt, h1zup, h2zup,
-              h1zkp_2, h2zkp_2, h1znt_2, h2znt_2, h1zup_2, h2zup_2,
-              h1zkp_3, h2zkp_3, h1znt_3, h2znt_3, h1zup_3, h2zup_3])
+    hz1 = sum([h1zkp, h2zkp, h1znt, h2znt, h1zup, h2zup])
+    hz2 = sum([h1zkp_2, h2zkp_2, h1znt_2, h2znt_2, h1zup_2, h2zup_2])
+    hz3 = sum([h1zkp_3, h2zkp_3, h1znt_3, h2znt_3, h1zup_3, h2zup_3])
     # Итоговое магнитное поле по теореме Пифагора:
-    h = mix(hx, hz)
+    h1 = mix(hx1, hz1)
+    h2 = mix(hx2, hz2)
+    h3 = mix(hx3, hz3)
     
     # результат - значение магнитного поля в этой точке для выбранной гармоники
-    return h
+    return [h1, h2, h3]
 
 
 
@@ -404,28 +410,34 @@ def electric_calc(x_e, z_e, f_e):
 
  
     # Сумма всех электрических полей по оси x        
-    ex = sum([ekpx, entx, eupx,
-              ekpx2, entx2, eupx2,
-              ekpx3, entx3, eupx3,])
+    ex1 = sum([ekpx, entx, eupx])
+    ex2 = sum([ekpx2, entx2, eupx2])
+    ex3 = sum([ekpx3, entx3, eupx3])
     # Сумма всех электрических полей по оси z
-    ez = sum([ekpz, entz, eupz,
-              ekpz2, entz2, eupz2,
-              ekpz3, entz3, eupz3])
+    ez1 = sum([ekpz, entz, eupz])
+    ez2 = sum([ekpz2, entz2, eupz2])
+    ez3 = sum([ekpz3, entz3, eupz3])
     # Итоговое электрических поле по теореме Пифагора:
-    e = mix(ex, ez)
+    e1 = mix(ex1, ez1)
+    e2 = mix(ex2, ez2)
+    e3 = mix(ex3, ez3)
     
     # результат - значение электрических поля в этой точке для выбранной гармоники
-    return e
+    return [e1, e2, e3]
 
 
 # суммироввание всех полей всех гармоник и подсчёт энергии для каждой точки:
 def full_field(res_en):
     sum_h, sum_e, sum_eng = 0, 0, 0
-    # cумма полей по гармоникам
+    # cумма полей по гармоникам:
+    # магнитное = h1путь + h2путь + h3путь
+    # электрическое =  e1путь + e2путь + e3путь
+    # энергия = h1путь * e1путь * sin(alpha) + h2путь * e2путь * sin(alpha) + h2путь * e2путь * sin(alpha)
     for en in res_en[0].values():
-        sum_h += en[0]  # магнитная составляющая
-        sum_e += en[1]  # электрическая составляющая
-        sum_eng += en[0] * en[1]
+        for j in range(0, 3):
+            sum_h += en[0][j]  # магнитная составляющая
+            sum_e += en[1][j]  # электрическая составляющая
+            sum_eng += en[0][j] * en[1][j] * sin(alpha)
     return sum_h, sum_e, sum_eng  # энергия - произведение магнитного и электрического поля
 
 
@@ -502,20 +514,30 @@ def ekran(en):
     # сталь: электрическое поле полностью отражается, магнитное полностью затухает
     # стекло: и электрическое, и магнитное домножаются на d_glass по формуле:
     # Эпрел = Эпад*d = (ExH)*d = E*d x H*d
+    # TODO
     if (abs(y) <= 0.5 * width) and (z >= gr_floor) and (z <= floor + height) and (x > 0) and (x < length):
         # внутри кабины
-        if kp_pass or nt_pass or up_pass or \
-           kp_sec_pass or nt_sec_pass or up_sec_pass or \
-           kp_thd_pass or nt_thd_pass or up_thd_pass:
-            # поле КП через стекло
+        pass_1 = kp_pass or nt_pass or up_pass
+        pass_2 = kp_sec_pass or nt_sec_pass or up_sec_pass
+        pass_3 = kp_thd_pass or nt_thd_pass or up_thd_pass
+        # поле КП через стекло
+        if pass_1:
             for f in en[0].keys():
-                en[0][f][0] *= d_glass
-                en[0][f][1] *= d_glass
-        else:
+                en[0][f][0][0] *= d_glass
+                en[0][f][1][0] *= d_glass
+        if pass_2:
+            for f in en[0].keys():
+                en[0][f][0][1] *= d_glass
+                en[0][f][1][1] *= d_glass
+        if pass_3:
+            for f in en[0].keys():
+                en[0][f][0][2] *= d_glass
+                en[0][f][1][2] *= d_glass
+        if not (pass_1 or pass_2 or pass_3):
             # если ни через одно стекло не проходит, значит тут сталь, т.е. поле равно нулю
             for f in en[0].keys():
-                en[0][f][0] = 0
-                en[0][f][1] = 0
+                en[0][f][0] = [0, 0, 0]
+                en[0][f][1] = [0, 0, 0]
     return en 
  
 
@@ -623,11 +645,17 @@ p = ti / 24  # статистическая вероятность воздей�
 
 chel_f_per = [{fr: [magnetic_calc(y_chel, z_chel, fr), electric_calc(y_chel, z_chel, fr)] for fr in harm.keys()},
               (x_chel, y_chel, z_chel)]
+              
 no_ekran_per = full_field(chel_f_per)[2]
-print('\nПеременное поле без экрана: %.4f' % no_ekran_per)
+
+print('Переменное поле без экрана - гармоники [H, E]:')
+for f, znach in chel_f_per[0].items():
+    print(f'{f}: {znach}')
+
+print('\nПеременное поле без экрана - энергия: %.4f' % no_ekran_per)
 
 ekran_per = full_field(ekran(chel_f_per))[2]
-print('Перменное поле с экраном %.4f' % ekran_per)
+print('Перменное поле с экраном  - энергия: %.4f' % ekran_per)
 Dco = ekran_per * ti * S * p
 Dpo = Dco / b
 print('Удельная суточная доза поглощённой энергии: %.4f' % Dpo)

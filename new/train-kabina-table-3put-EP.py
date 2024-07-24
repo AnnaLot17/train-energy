@@ -702,6 +702,11 @@ p = ti / 24  # статистическая вероятность воздей�
 chel_f_per = [{fr: [magnetic_calc(y_chel, z_chel, fr), electric_calc(y_chel, z_chel, fr)] for fr in harm.keys()},
               (x_chel, y_chel, z_chel)]
 no_ekran_per = full_field(chel_f_per)[2]
+
+print('Переменное поле без экрана - гармоники [H, E]:')
+for f, znach in chel_f_per[0].items():
+    print(f'{f}: {znach}')
+    
 print('\nПеременное поле без экрана: %.4f' % no_ekran_per)
 
 ekran_per = full_field(ekran(chel_f_per))[2]
