@@ -514,7 +514,6 @@ def ekran(en):
     # сталь: электрическое поле полностью отражается, магнитное полностью затухает
     # стекло: и электрическое, и магнитное домножаются на d_glass по формуле:
     # Эпрел = Эпад*d = (ExH)*d = E*d x H*d
-    # TODO
     if (abs(y) <= 0.5 * width) and (z >= gr_floor) and (z <= floor + height) and (x > 0) and (x < length):
         # внутри кабины
         pass_1 = kp_pass or nt_pass or up_pass
@@ -589,7 +588,7 @@ def visual_front_locomotive(ext_f):
         for no, y_list in enumerate(znach):
             for dt in y_list:
                 if f:
-                    E = dt[0][f][0]*dt[0][f][1]
+                    E = dt[0][f][0][0]*dt[0][f][1][0] + dt[0][f][0][1]*dt[0][f][1][1] + dt[0][f][0][2]*dt[0][f][1][2]
                     print(f'{E:.3f}'.ljust(ln), end='', file=rf)
                 else:
                     print(f'{dt:.3f}'.ljust(ln), end='', file=rf)
@@ -634,8 +633,8 @@ print(f'Высота среза: {z_graph} метров')
 # РАСЧЁТ ТАБЛИЦ
 
 print('\nРасчёт поля........\n')
-#cont_f_front = visual_front()
-#visual_front_locomotive(cont_f_front)
+cont_f_front = visual_front()
+visual_front_locomotive(cont_f_front)
 
 # РАСЧЁТ СТАТИСТИКИ
 
@@ -648,9 +647,14 @@ chel_f_per = [{fr: [magnetic_calc(y_chel, z_chel, fr), electric_calc(y_chel, z_c
               
 no_ekran_per = full_field(chel_f_per)[2]
 
-print('Переменное поле без экрана - гармоники [H, E]:')
+print('\nПеременное поле без экрана - гармоники [H, E] по трём путям:')
 for f, znach in chel_f_per[0].items():
     print(f'{f}: {znach}')
+
+print('\nПеременное поле без экрана - энергия по гармоникам:')
+for f, znach in chel_f_per[0].items():
+    e = znach[0][0] * znach[1][0] + znach[0][1] * znach[1][1] + znach[0][2] * znach[1][2]
+    print(f'{f}: %.4f' % e)
 
 print('\nПеременное поле без экрана - энергия: %.4f' % no_ekran_per)
 
